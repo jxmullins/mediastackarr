@@ -447,7 +447,7 @@ func (s *Shell) cmdDeploy(args []string) error {
 
 	// Create directories
 	ui.PrintInfo("Creating directories...")
-	if err := stack.CreateDirectories(s.cfg.DataFolder, s.cfg.MediaFolder, s.cfg.PUID, s.cfg.PGID, false, false); err != nil {
+	if err := stack.CreateDirectories(s.cfg.ConfigDir, s.cfg.DataFolder, s.cfg.MediaFolder, s.cfg.PUID, s.cfg.PGID, false, false); err != nil {
 		return err
 	}
 

@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/fatih/color"
@@ -54,6 +55,11 @@ func runDeploy(cmd *cobra.Command, args []string) error {
 		cfg.Variant = config.NormalizeVariant(cfg.Variant)
 	}
 
+	// Check for root privileges (required for chown/chmod)
+	if os.Geteuid() != 0 && !dryRun {
+		return fmt.Errorf("deploy command requires root privileges to set file permissions. Please run with sudo")
+	}
+
 	color.Cyan("Deploying MediaStack...")
 	color.Cyan("  Variant: %s", cfg.Variant)
 	color.Cyan("  Config:  %s", cfg.ConfigDir)
@@ -70,6 +76,7 @@ func runDeploy(cmd *cobra.Command, args []string) error {
 	if !noDirs {
 		color.Cyan("Step 1: Creating directories...")
 		if err := stack.CreateDirectories(
+			cfg.ConfigDir,
 			cfg.DataFolder,
 			cfg.MediaFolder,
 			cfg.PUID,

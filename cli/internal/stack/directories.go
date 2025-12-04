@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/fatih/color"
+	"gopkg.in/yaml.v3"
 )
 
 // DataDirectories are the directories needed in FOLDER_FOR_DATA
@@ -102,8 +103,26 @@ var MediaDirectories = []string{
 	"filebot/output",
 }
 
+type ExtraDirs struct {
+	Data  []string `yaml:"data"`
+	Media []string `yaml:"media"`
+}
+
 // CreateDirectories creates all required directories with proper permissions
-func CreateDirectories(dataFolder, mediaFolder string, uid, gid int, verbose bool, dryRun bool) error {
+func CreateDirectories(configDir, dataFolder, mediaFolder string, uid, gid int, verbose bool, dryRun bool) error {
+	// Load extra directories from config if present
+	extraDirs := ExtraDirs{}
+	extraPath := filepath.Join(configDir, "directories.yaml")
+	if _, err := os.Stat(extraPath); err == nil {
+		if verbose {
+			color.Cyan("Loading extra directories from %s", extraPath)
+		}
+		data, err := os.ReadFile(extraPath)
+		if err == nil {
+			yaml.Unmarshal(data, &extraDirs)
+		}
+	}
+
 	if verbose {
 		color.Cyan("Creating directories...")
 		color.Cyan("  Data folder: %s", dataFolder)
@@ -112,7 +131,8 @@ func CreateDirectories(dataFolder, mediaFolder string, uid, gid int, verbose boo
 	}
 
 	// Create data directories
-	for _, dir := range DataDirectories {
+	allDataDirs := append(DataDirectories, extraDirs.Data...)
+	for _, dir := range allDataDirs {
 		fullPath := filepath.Join(dataFolder, dir)
 		if err := createDir(fullPath, uid, gid, verbose, dryRun); err != nil {
 			return fmt.Errorf("failed to create data directory %s: %w", dir, err)
@@ -120,7 +140,8 @@ func CreateDirectories(dataFolder, mediaFolder string, uid, gid int, verbose boo
 	}
 
 	// Create media directories
-	for _, dir := range MediaDirectories {
+	allMediaDirs := append(MediaDirectories, extraDirs.Media...)
+	for _, dir := range allMediaDirs {
 		fullPath := filepath.Join(mediaFolder, dir)
 		if err := createDir(fullPath, uid, gid, verbose, dryRun); err != nil {
 			return fmt.Errorf("failed to create media directory %s: %w", dir, err)

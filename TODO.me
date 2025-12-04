@@ -1,0 +1,30 @@
+# MediaStack CLI Analysis & TODO
+
+## Analysis Results
+
+### Design Issues
+1.  **Hardcoded Infrastructure**: The lists of directories (`internal/stack/directories.go`) and config files (`internal/stack/files.go`) are hardcoded in Go. Adding a new service requires recompiling the CLI.
+    *   *Impact*: High coupling. Poor extensibility.
+    *   *Recommendation*: Move these definitions to an external configuration file (e.g., `manifest.yaml`) or parse `docker-compose.yaml` labels to determine requirements.
+2.  **Directory Structure Coupling**: The CLI assumes a strict folder hierarchy (`base-working-files`, `cli`, `[variant]`).
+    *   *Impact*: Hard to use in non-standard deployments.
+3.  **Global Configuration**: The `cfg` variable in `root.go` is a global pointer, making testing and parallel execution difficult.
+
+### Security Issues
+1.  **Root Privileges**: The `deploy` command changes file ownership (`chown`) and permissions (`chmod`). This requires the CLI to be run as root.
+    *   *Risk*: Running complex parsing logic (like XML/YAML parsing) as root increases the attack surface.
+2.  **Secret Exposure**: The `apikeys` command prints secrets to stdout. While intended, ensure this is only accessible to authorized users.
+
+### Performance Problems
+1.  **Sequential Operations**: `Stop` and `Restart` operations often process containers sequentially (though `docker compose` handles some parallelism, the CLI's custom logic might bottleneck).
+2.  **Exec Wrapper**: Heavily relies on `os/exec` to call `docker` binary. Direct SDK usage (already partially implemented) is more efficient and robust.
+
+## Fixes Implemented
+- [ ] Refactored `internal/stack` to support loading directory/file definitions from config.
+- [ ] Added root privilege check for commands requiring `chown`.
+
+## TODO
+- [ ] **Refactor Directory Logic**: Move `DataDirectories` and `MediaDirectories` to `directories.json` or `manifest.yaml` loaded at runtime.
+- [ ] **Enhance Error Handling**: Replace `fmt.Println` error reporting with structured logging.
+- [ ] **Unit Tests**: Add tests for `apikeys.go` parsers to ensure they handle malformed files gracefully.
+- [ ] **CI/CD**: Add GitHub Actions workflow for automated builds (currently relies on local `Makefile`).
