@@ -1,0 +1,33 @@
+# Minimal test docker-compose for CLI testing
+# This is NOT a real stack - just enough to test CLI parsing
+
+version: "3.8"
+
+services:
+  test-nginx:
+    image: nginx:alpine
+    container_name: mediastack-test-nginx
+    ports:
+      - "8080:80"
+    labels:
+      - "com.docker.compose.project=mediastack-test"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  test-redis:
+    image: redis:alpine
+    container_name: mediastack-test-redis
+    labels:
+      - "com.docker.compose.project=mediastack-test"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  default:
+    name: mediastack-test-network

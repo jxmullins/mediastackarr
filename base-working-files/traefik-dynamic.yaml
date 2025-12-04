@@ -93,7 +93,7 @@ http:
           crowdsecAppsecHost: crowdsec:7422
           crowdsecAppsecFailureBlock: true
           crowdsecAppsecUnreachableBlock: true
-          crowdsecLapiKey: 8andilX0JKYIu8z+R4imPkIgG+TMdCttAuMaHrsV7ZU
+          crowdsecLapiKey: "<REPLACE_WITH_CROWDSEC_LAPI_KEY>"
           crowdsecLapiHost: crowdsec:8080
           crowdsecLapiScheme: http
           crowdsecLapiTLSInsecureVerify: false
@@ -105,4 +105,3 @@ http:
             - 10.0.0.0/8
             - 172.16.0.0/12
             - 192.168.0.0/16
-

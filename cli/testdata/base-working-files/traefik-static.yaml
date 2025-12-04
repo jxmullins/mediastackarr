@@ -1,0 +1,3 @@
+# Test traefik config
+api:
+  dashboard: true

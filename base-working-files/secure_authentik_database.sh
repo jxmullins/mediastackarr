@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 POSTGRESQL_CONTAINER="postgresql"
 ENV_FILE=".env"
@@ -45,7 +45,7 @@ else
 fi
 
 # Grant permissions to database
-sudo docker exec -e PGPASSWORD="$ADMIN_PASSWORD" -i "$POSTGRESQL_CONTAINER" psql -U "$POSTGRESQL_USERNAME" -d "$AUTHENTIK_DATABASE" <<EOF
+sudo docker exec -e PGPASSWORD="$POSTGRESQL_PASSWORD" -i "$POSTGRESQL_CONTAINER" psql -U "$POSTGRESQL_USERNAME" -d "$AUTHENTIK_DATABASE" <<EOF
 DO \$\$
 BEGIN
    IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '$POSTGRESQL_USERNAME') THEN

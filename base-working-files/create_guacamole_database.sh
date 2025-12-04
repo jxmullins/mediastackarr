@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 POSTGRESQL_CONTAINER="postgresql"
 ENV_FILE=".env"
@@ -48,7 +48,7 @@ sudo docker exec -e PGPASSWORD="$POSTGRESQL_PASSWORD" "$POSTGRESQL_CONTAINER" \
     psql -U "$POSTGRESQL_USERNAME" -d postgres -c "CREATE DATABASE \"$GUACAMOLE_DATABASE\";"
 
 # Grant permissions to database
-sudo docker exec -e PGPASSWORD="$ADMIN_PASSWORD" -i "$POSTGRESQL_CONTAINER" psql -U "$POSTGRESQL_USERNAME" -d "$GUACAMOLE_DATABASE" <<EOF
+sudo docker exec -e PGPASSWORD="$POSTGRESQL_PASSWORD" -i "$POSTGRESQL_CONTAINER" psql -U "$POSTGRESQL_USERNAME" -d "$GUACAMOLE_DATABASE" <<EOF
 DO \$\$
 BEGIN
    IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '$POSTGRESQL_USERNAME') THEN

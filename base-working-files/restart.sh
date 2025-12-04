@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-set -e
+set -euo pipefail
 
 FOLDER_FOR_YAMLS=/docker             # <-- Folder where the yaml and .env files are located
 
@@ -72,17 +72,9 @@ echo
 sudo docker compose pull
 
 echo 
-echo Removing all non-persistent Docker containers, volumes, and networks...
+echo Stopping and removing existing Mediastack containers...
 echo 
-if [ -n "$containers" ]; then
-  sudo docker stop $containers            # Stop all active Docker containers
-  sudo docker rm   $containers            # Remove all active Docker containers
-fi
-
-sudo docker container  prune -f           # Force-remove all Docker containers
-#sudo docker image      prune -a -f       # Force-remove all Docker images                   <-- THIS WILL FORCE ALL DOCKER IMAGES TO BE DOWNLOADED AGAIN
-sudo docker volume     prune -f           # Force-remove all non-persistent Docker volumes
-sudo docker network    prune -f           # Force-remove all Docker networks
+sudo docker compose down --remove-orphans
 
 echo 
 echo Moving configuration files into application folders...

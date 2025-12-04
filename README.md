@@ -92,6 +92,8 @@ Port forward your incoming connections on your home Internet gateway / router, t
 
 ## How Do I Use The MediaStack Repo  
 
+- **CLI staging script:** Run `./install.sh` and choose full / mini / no-download; it will copy `base-working-files`, the selected `docker-compose.yaml`, and a starter `.env` into `./mediastack-install` (or a directory you pass as the first argument). Edit `.env`, then `docker compose up -d` from that directory.  
+
 - **base-working-files:** Download all of these files into a single directory located on your Docker computer. Then download the `docker-compose.yaml` file located in one of the following configurations, into the same directory.  
 
 - **docker-compose.yaml:** Download one of the `docker-compose.yaml` configuration files:  

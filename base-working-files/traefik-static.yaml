@@ -25,7 +25,7 @@ accessLog:
 
 api:
   dashboard: true
-  insecure: true
+  insecure: false   # disable unauthenticated dashboard exposure; use secured router instead
 
 entryPoints:
   web:

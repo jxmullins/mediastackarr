@@ -1,0 +1,3 @@
+# Test traefik internal config
+http:
+  middlewares: {}

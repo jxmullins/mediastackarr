@@ -1,0 +1,3 @@
+# Test traefik dynamic config
+http:
+  routers: {}
