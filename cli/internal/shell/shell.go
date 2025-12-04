@@ -355,31 +355,16 @@ func (s *Shell) cmdHelp(args []string) error {
 		return nil
 	}
 
-	// List all commands
-	fmt.Println()
-	fmt.Println(ui.TitleStyle.Render("  Available Commands"))
-	fmt.Println()
-
-	// Deduplicate and sort commands
-	seen := make(map[string]bool)
-	var names []string
-	for name, cmd := range s.commands {
-		if name == cmd.Name && !seen[name] {
-			seen[name] = true
-			names = append(names, name)
-		}
-	}
-	sort.Strings(names)
-
-	for _, name := range names {
-		cmd := s.commands[name]
-		// Use simple formatting - command on left, description on right
-		cmdStr := ui.HelpKeyStyle.Render(fmt.Sprintf("%-12s", "/"+name))
-		fmt.Printf("    %s %s\n", cmdStr, cmd.Description)
+	// Show interactive help menu
+	selected, err := ShowHelpMenu(s.commands)
+	if err != nil {
+		return err
 	}
 
-	fmt.Println()
-	fmt.Println(ui.MutedStyle.Render("  Type /help <command> for more details"))
+	// If user selected a command, show its details
+	if selected != "" {
+		return s.cmdHelp([]string{selected})
+	}
 
 	return nil
 }
